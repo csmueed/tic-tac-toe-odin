@@ -1,16 +1,83 @@
-const r11 = document.querySelector(".r11");
-const r12 = document.querySelector(".r12");
-const r13 = document.querySelector(".r13");
+const cell = document.querySelectorAll(".cell");
+const box = document.querySelector(".box");
+const restartBtn = document.querySelector(".restart-btn");
+const turn = document.querySelector(".turn");
+const result = document.querySelector(".result");
 
-const r21 = document.querySelector(".r21");
-const r22 = document.querySelector(".r22");
-const r23 = document.querySelector(".r23");
+const gameBoard = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X";
+let running = true;
+const winningCombos = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],
+];
 
-const r31 = document.querySelector(".r31");
-const r32 = document.querySelector(".r32");
-const r33 = document.querySelector(".r33");
+restartBtn.addEventListener("click", function (e) {
+  restartGame();
+});
 
-const rrr = document.querySelectorAll(".rrr")
+initializeGame();
 
+function initializeGame() {
+  cell.forEach((item) => {
+    item.addEventListener("click", function (e) {
+      if (!running) return;
+      if (item.textContent !== "") return;
+      item.textContent = currentPlayer;
+      const index = item.dataset.index;
+      gameBoard[index] = currentPlayer;
 
+      checkWinner();
+      if (running) {
+        changePlayer();
+        turn.textContent = `${currentPlayer}'s Turn`;
+      }
+    });
+  });
+}
 
+function changePlayer() {
+  if (currentPlayer == "X") {
+    currentPlayer = "O";
+  } else {
+    currentPlayer = "X";
+  }
+}
+
+function checkWinner() {
+  let roundWon = false;
+
+  for (let [a, b, c] of winningCombos) {
+    if (
+      gameBoard[a] !== "" &&
+      gameBoard[a] === gameBoard[b] &&
+      gameBoard[b] === gameBoard[c]
+    ) {
+      result.textContent = `${currentPlayer} Wins the Game!`;
+      running = false;
+      roundWon = true;
+      break;
+    }
+  }
+
+  if (!roundWon && !gameBoard.includes("")) {
+    turn.textContent = "";
+    result.textContent = "It's a Draw!";
+    running = false;
+  }
+}
+
+function restartGame() {
+  gameBoard.fill("");
+  running = true;
+  currentPlayer = "X";
+  cell.forEach((item) => (item.textContent = ""));
+  result.textContent = "";
+  turn.textContent = `${currentPlayer}'s Turn`;
+}
